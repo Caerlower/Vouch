@@ -1,0 +1,925 @@
+#pragma version 11
+#pragma typetrack false
+
+// algopy.arc4.ARC4Contract.approval_program() -> uint64:
+main:
+    intcblock 0 1 2 8
+    bytecblock "operator" "asset_id" "bootstrapped" 0x151f7c75 0x6f776e3a 0x62616c3a 0x72656d3a
+    txn ApplicationID
+    bnz main_after_if_else@2
+    // vouch_escrow.py:25
+    // self.operator = Account()
+    bytec_0 // "operator"
+    global ZeroAddress
+    app_global_put
+    // vouch_escrow.py:26
+    // self.asset_id = UInt64(0)
+    bytec_1 // "asset_id"
+    intc_0 // 0
+    app_global_put
+    // vouch_escrow.py:27
+    // self.bootstrapped = UInt64(0)
+    bytec_2 // "bootstrapped"
+    intc_0 // 0
+    app_global_put
+
+main_after_if_else@2:
+    // vouch_escrow.py:23
+    // class VouchEscrow(ARC4Contract):
+    txn OnCompletion
+    !
+    assert // OnCompletion must be NoOp
+    txn ApplicationID
+    bz main_create_NoOp@17
+    pushbytess 0xa0cadf8a 0x7d0f6b8a 0x3d1b4c35 0x5dabe868 0x76f6fe10 0xdeaef251 0x7ec92f2f 0x3a92c219 0x311b2f8b 0x5ba22a84 0xf06cd3bd // method "bootstrap(uint64)void", method "set_operator(address)void", method "register_owner(byte[],address)void", method "deposit(byte[],axfer)uint64", method "remit(byte[],byte[],address,address,uint64,uint64,uint64)void", method "withdraw(byte[],uint64,address,uint64)uint64", method "get_balance(byte[])uint64", method "is_remitted(byte[])uint64", method "get_operator()address", method "get_asset_id()uint64", method "get_owner(byte[])address"
+    txna ApplicationArgs 0
+    match bootstrap set_operator register_owner deposit remit withdraw get_balance is_remitted get_operator get_asset_id get_owner
+    err
+
+main_create_NoOp@17:
+    // vouch_escrow.py:23
+    // class VouchEscrow(ARC4Contract):
+    pushbytes 0x240d2f67 // method "create(uint64)void"
+    txna ApplicationArgs 0
+    match create
+    err
+
+
+// vouch_escrow.VouchEscrow.create[routing]() -> void:
+create:
+    // vouch_escrow.py:35
+    // @arc4.abimethod(create="require")
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // vouch_escrow.py:37
+    // self.operator = Txn.sender
+    bytec_0 // "operator"
+    txn Sender
+    app_global_put
+    // vouch_escrow.py:38
+    // self.asset_id = asset.id
+    bytec_1 // "asset_id"
+    swap
+    app_global_put
+    // vouch_escrow.py:39
+    // self.bootstrapped = UInt64(0)
+    bytec_2 // "bootstrapped"
+    intc_0 // 0
+    app_global_put
+    // vouch_escrow.py:35
+    // @arc4.abimethod(create="require")
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.bootstrap[routing]() -> void:
+bootstrap:
+    // vouch_escrow.py:41
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // vouch_escrow.py:44
+    // assert Txn.sender == self.operator, "not operator"
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "operator"
+    app_global_get_ex
+    assert // check self.operator exists
+    ==
+    assert // not operator
+    // vouch_escrow.py:45
+    // assert self.bootstrapped == UInt64(0), "already bootstrapped"
+    intc_0 // 0
+    bytec_2 // "bootstrapped"
+    app_global_get_ex
+    assert // check self.bootstrapped exists
+    !
+    assert // already bootstrapped
+    // vouch_escrow.py:46
+    // assert asset.id == self.asset_id, "wrong asset"
+    intc_0 // 0
+    bytec_1 // "asset_id"
+    app_global_get_ex
+    assert // check self.asset_id exists
+    dig 1
+    ==
+    assert // wrong asset
+    // vouch_escrow.py:47-52
+    // itxn.AssetTransfer(
+    //     asset_receiver=Global.current_application_address,
+    //     xfer_asset=asset,
+    //     asset_amount=0,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    // vouch_escrow.py:48
+    // asset_receiver=Global.current_application_address,
+    global CurrentApplicationAddress
+    // vouch_escrow.py:50
+    // asset_amount=0,
+    intc_0 // 0
+    itxn_field AssetAmount
+    itxn_field AssetReceiver
+    itxn_field XferAsset
+    // vouch_escrow.py:47
+    // itxn.AssetTransfer(
+    pushint 4 // axfer
+    itxn_field TypeEnum
+    // vouch_escrow.py:51
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // vouch_escrow.py:47-52
+    // itxn.AssetTransfer(
+    //     asset_receiver=Global.current_application_address,
+    //     xfer_asset=asset,
+    //     asset_amount=0,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // vouch_escrow.py:53
+    // self.bootstrapped = UInt64(1)
+    bytec_2 // "bootstrapped"
+    intc_1 // 1
+    app_global_put
+    // vouch_escrow.py:41
+    // @arc4.abimethod
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.set_operator[routing]() -> void:
+set_operator:
+    // vouch_escrow.py:55
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 32 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // vouch_escrow.py:57
+    // assert Txn.sender == self.operator, "not operator"
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "operator"
+    app_global_get_ex
+    assert // check self.operator exists
+    ==
+    assert // not operator
+    // vouch_escrow.py:58
+    // self.operator = new_operator
+    bytec_0 // "operator"
+    swap
+    app_global_put
+    // vouch_escrow.py:55
+    // @arc4.abimethod
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.register_owner[routing]() -> void:
+register_owner:
+    // vouch_escrow.py:60
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    len
+    pushint 32 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // vouch_escrow.py:66
+    // assert Txn.sender == self.operator, "not operator"
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "operator"
+    app_global_get_ex
+    assert // check self.operator exists
+    ==
+    assert // not operator
+    // vouch_escrow.py:67
+    // assert seller_id.length > UInt64(0), "empty seller"
+    dig 1
+    len
+    dup
+    assert // empty seller
+    // vouch_escrow.py:68
+    // assert seller_id.length <= UInt64(48), "seller id too long"
+    pushint 48 // 48
+    <=
+    assert // seller id too long
+    // vouch_escrow.py:69
+    // _existing, has_owner = self.owners.maybe(seller_id)
+    bytec 4 // 0x6f776e3a
+    uncover 2
+    concat
+    dup
+    box_len
+    bury 1
+    // vouch_escrow.py:70
+    // assert not has_owner, "already registered"
+    !
+    assert // already registered
+    // vouch_escrow.py:71
+    // self.owners[seller_id] = owner
+    swap
+    box_put
+    // vouch_escrow.py:60
+    // @arc4.abimethod
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.deposit[routing]() -> void:
+deposit:
+    // vouch_escrow.py:73
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txn GroupIndex
+    intc_1 // 1
+    -
+    dup
+    gtxns TypeEnum
+    pushint 4 // axfer
+    ==
+    assert // transaction type is axfer
+    // vouch_escrow.py:82
+    // assert self.bootstrapped == UInt64(1), "not bootstrapped"
+    intc_0 // 0
+    bytec_2 // "bootstrapped"
+    app_global_get_ex
+    assert // check self.bootstrapped exists
+    intc_1 // 1
+    ==
+    assert // not bootstrapped
+    // vouch_escrow.py:83
+    // assert seller_id.length > UInt64(0), "empty seller"
+    dig 1
+    len
+    dup
+    assert // empty seller
+    // vouch_escrow.py:84
+    // assert seller_id.length <= UInt64(48), "seller id too long"
+    pushint 48 // 48
+    <=
+    assert // seller id too long
+    // vouch_escrow.py:85
+    // assert payment.asset_receiver == Global.current_application_address, "bad recv"
+    dup
+    gtxns AssetReceiver
+    global CurrentApplicationAddress
+    ==
+    assert // bad recv
+    // vouch_escrow.py:86
+    // assert payment.xfer_asset.id == self.asset_id, "bad asset"
+    dup
+    gtxns XferAsset
+    intc_0 // 0
+    bytec_1 // "asset_id"
+    app_global_get_ex
+    assert // check self.asset_id exists
+    ==
+    assert // bad asset
+    // vouch_escrow.py:87
+    // assert payment.sender == Txn.sender, "axfer sender mismatch"
+    dup
+    gtxns Sender
+    txn Sender
+    ==
+    assert // axfer sender mismatch
+    // vouch_escrow.py:88
+    // assert payment.asset_amount > UInt64(0), "zero deposit"
+    gtxns AssetAmount
+    dup
+    assert // zero deposit
+    // vouch_escrow.py:90
+    // _owner, has_owner = self.owners.maybe(seller_id)
+    bytec 4 // 0x6f776e3a
+    dig 2
+    concat
+    box_len
+    bury 1
+    // vouch_escrow.py:91
+    // assert has_owner, "owner not registered"
+    assert // owner not registered
+    // vouch_escrow.py:93
+    // bal = self.balances.get(seller_id, default=UInt64(0))
+    bytec 5 // 0x62616c3a
+    uncover 2
+    concat
+    dup
+    box_get
+    swap
+    btoi
+    intc_0 // 0
+    swap
+    uncover 2
+    select
+    // vouch_escrow.py:94
+    // new_bal = bal + payment.asset_amount
+    uncover 2
+    +
+    // vouch_escrow.py:95
+    // self.balances[seller_id] = new_bal
+    itob
+    swap
+    dig 1
+    box_put
+    // vouch_escrow.py:73
+    // @arc4.abimethod
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.remit[routing]() -> void:
+remit:
+    // vouch_escrow.py:98
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 3
+    dup
+    cover 3
+    len
+    pushint 32 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 4
+    dup
+    cover 3
+    len
+    pushint 32 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 5
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    cover 3
+    txna ApplicationArgs 6
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    cover 4
+    txna ApplicationArgs 7
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    cover 5
+    // vouch_escrow.py:113
+    // assert Txn.sender == self.operator, "not operator"
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "operator"
+    app_global_get_ex
+    assert // check self.operator exists
+    ==
+    assert // not operator
+    // vouch_escrow.py:114
+    // assert self.bootstrapped == UInt64(1), "not bootstrapped"
+    intc_0 // 0
+    bytec_2 // "bootstrapped"
+    app_global_get_ex
+    assert // check self.bootstrapped exists
+    intc_1 // 1
+    ==
+    assert // not bootstrapped
+    // vouch_escrow.py:115
+    // assert asset.id == self.asset_id, "wrong asset"
+    intc_0 // 0
+    bytec_1 // "asset_id"
+    app_global_get_ex
+    assert // check self.asset_id exists
+    ==
+    assert // wrong asset
+    // vouch_escrow.py:116
+    // assert settle_tx_id.length > UInt64(0), "empty settle id"
+    dig 2
+    len
+    dup
+    assert // empty settle id
+    // vouch_escrow.py:117
+    // assert settle_tx_id.length <= UInt64(64), "settle id too long"
+    pushint 64 // 64
+    <=
+    assert // settle id too long
+    // vouch_escrow.py:119
+    // already = self.remitted.get(settle_tx_id, default=UInt64(0))
+    bytec 6 // 0x72656d3a
+    uncover 3
+    concat
+    dup
+    box_get
+    swap
+    btoi
+    intc_0 // 0
+    swap
+    uncover 2
+    select
+    // vouch_escrow.py:120
+    // assert already == UInt64(0), "already remitted"
+    !
+    assert // already remitted
+    // vouch_escrow.py:122
+    // total = rebate + commission
+    dig 2
+    uncover 2
+    +
+    // vouch_escrow.py:123
+    // assert total > UInt64(0), "nothing to remit"
+    dup
+    assert // nothing to remit
+    // vouch_escrow.py:125
+    // bal = self.balances.get(seller_id, default=UInt64(0))
+    bytec 5 // 0x62616c3a
+    uncover 4
+    concat
+    dup
+    box_get
+    swap
+    btoi
+    intc_0 // 0
+    swap
+    uncover 2
+    select
+    // vouch_escrow.py:126
+    // assert bal >= total, "insufficient escrow"
+    dup
+    dig 3
+    >=
+    assert // insufficient escrow
+    // vouch_escrow.py:128
+    // self.balances[seller_id] = bal - total
+    uncover 2
+    -
+    itob
+    box_put
+    // vouch_escrow.py:129
+    // self.remitted[settle_tx_id] = UInt64(1)
+    intc_1 // 1
+    itob
+    box_put
+    // vouch_escrow.py:131
+    // if rebate > UInt64(0):
+    bz remit_after_if_else@4
+    // vouch_escrow.py:132-137
+    // itxn.AssetTransfer(
+    //     asset_receiver=buyer,
+    //     xfer_asset=asset,
+    //     asset_amount=rebate,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    dig 2
+    itxn_field AssetAmount
+    dup
+    itxn_field XferAsset
+    dig 4
+    itxn_field AssetReceiver
+    // vouch_escrow.py:132
+    // itxn.AssetTransfer(
+    pushint 4 // axfer
+    itxn_field TypeEnum
+    // vouch_escrow.py:136
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // vouch_escrow.py:132-137
+    // itxn.AssetTransfer(
+    //     asset_receiver=buyer,
+    //     xfer_asset=asset,
+    //     asset_amount=rebate,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+
+remit_after_if_else@4:
+    // vouch_escrow.py:138
+    // if commission > UInt64(0):
+    dig 1
+    bz remit_after_if_else@7
+    // vouch_escrow.py:139-144
+    // itxn.AssetTransfer(
+    //     asset_receiver=referrer,
+    //     xfer_asset=asset,
+    //     asset_amount=commission,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    dig 1
+    itxn_field AssetAmount
+    dup
+    itxn_field XferAsset
+    dig 3
+    itxn_field AssetReceiver
+    // vouch_escrow.py:139
+    // itxn.AssetTransfer(
+    pushint 4 // axfer
+    itxn_field TypeEnum
+    // vouch_escrow.py:143
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // vouch_escrow.py:139-144
+    // itxn.AssetTransfer(
+    //     asset_receiver=referrer,
+    //     xfer_asset=asset,
+    //     asset_amount=commission,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+
+remit_after_if_else@7:
+    // vouch_escrow.py:98
+    // @arc4.abimethod
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.withdraw[routing]() -> void:
+withdraw:
+    // vouch_escrow.py:146
+    // @arc4.abimethod
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    dup
+    txna ApplicationArgs 2
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    cover 2
+    txna ApplicationArgs 3
+    dup
+    cover 3
+    len
+    pushint 32 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 4
+    dup
+    len
+    intc_3 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    dup
+    cover 3
+    // vouch_escrow.py:151
+    // assert self.bootstrapped == UInt64(1), "not bootstrapped"
+    intc_0 // 0
+    bytec_2 // "bootstrapped"
+    app_global_get_ex
+    assert // check self.bootstrapped exists
+    intc_1 // 1
+    ==
+    assert // not bootstrapped
+    // vouch_escrow.py:152
+    // assert asset.id == self.asset_id, "wrong asset"
+    intc_0 // 0
+    bytec_1 // "asset_id"
+    app_global_get_ex
+    assert // check self.asset_id exists
+    ==
+    assert // wrong asset
+    // vouch_escrow.py:153
+    // assert amount > UInt64(0), "zero withdraw"
+    assert // zero withdraw
+    // vouch_escrow.py:155
+    // owner, has_owner = self.owners.maybe(seller_id)
+    bytec 4 // 0x6f776e3a
+    swap
+    concat
+    box_get
+    swap
+    dup
+    uncover 2
+    // vouch_escrow.py:156
+    // assert has_owner, "unknown seller"
+    assert // unknown seller
+    // vouch_escrow.py:157
+    // assert Txn.sender == owner or Txn.sender == self.operator, "not authorized"
+    txn Sender
+    ==
+    bnz withdraw_bool_true@3
+    txn Sender
+    intc_0 // 0
+    bytec_0 // "operator"
+    app_global_get_ex
+    assert // check self.operator exists
+    ==
+    bz withdraw_bool_false@4
+
+withdraw_bool_true@3:
+    intc_1 // 1
+
+withdraw_bool_merge@5:
+    // vouch_escrow.py:157
+    // assert Txn.sender == owner or Txn.sender == self.operator, "not authorized"
+    assert // not authorized
+    // vouch_escrow.py:158
+    // assert to == owner, "to must be owner"
+    dig 2
+    dup
+    dig 2
+    ==
+    assert // to must be owner
+    // vouch_escrow.py:160
+    // bal = self.balances.get(seller_id, default=UInt64(0))
+    bytec 5 // 0x62616c3a
+    dig 6
+    concat
+    dup
+    box_get
+    swap
+    btoi
+    intc_0 // 0
+    swap
+    uncover 2
+    select
+    // vouch_escrow.py:161
+    // assert bal >= amount, "insufficient escrow"
+    dup
+    dig 7
+    dup
+    cover 3
+    >=
+    assert // insufficient escrow
+    // vouch_escrow.py:162
+    // new_bal = bal - amount
+    dig 1
+    -
+    // vouch_escrow.py:163
+    // self.balances[seller_id] = new_bal
+    itob
+    uncover 2
+    dig 1
+    box_put
+    // vouch_escrow.py:165-170
+    // itxn.AssetTransfer(
+    //     asset_receiver=to,
+    //     xfer_asset=asset,
+    //     asset_amount=amount,
+    //     fee=0,
+    // ).submit()
+    itxn_begin
+    swap
+    itxn_field AssetAmount
+    dig 3
+    itxn_field XferAsset
+    swap
+    itxn_field AssetReceiver
+    // vouch_escrow.py:165
+    // itxn.AssetTransfer(
+    pushint 4 // axfer
+    itxn_field TypeEnum
+    // vouch_escrow.py:169
+    // fee=0,
+    intc_0 // 0
+    itxn_field Fee
+    // vouch_escrow.py:165-170
+    // itxn.AssetTransfer(
+    //     asset_receiver=to,
+    //     xfer_asset=asset,
+    //     asset_amount=amount,
+    //     fee=0,
+    // ).submit()
+    itxn_submit
+    // vouch_escrow.py:146
+    // @arc4.abimethod
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+withdraw_bool_false@4:
+    intc_0 // 0
+    b withdraw_bool_merge@5
+
+
+// vouch_escrow.VouchEscrow.get_balance[routing]() -> void:
+get_balance:
+    // vouch_escrow.py:173
+    // @arc4.abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // vouch_escrow.py:175
+    // return self.balances.get(seller_id, default=UInt64(0))
+    bytec 5 // 0x62616c3a
+    swap
+    concat
+    box_get
+    swap
+    btoi
+    intc_0 // 0
+    swap
+    uncover 2
+    select
+    // vouch_escrow.py:173
+    // @arc4.abimethod(readonly=True)
+    itob
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.is_remitted[routing]() -> void:
+is_remitted:
+    // vouch_escrow.py:177
+    // @arc4.abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // vouch_escrow.py:179
+    // return self.remitted.get(settle_tx_id, default=UInt64(0))
+    bytec 6 // 0x72656d3a
+    swap
+    concat
+    box_get
+    swap
+    btoi
+    intc_0 // 0
+    swap
+    uncover 2
+    select
+    // vouch_escrow.py:177
+    // @arc4.abimethod(readonly=True)
+    itob
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.get_operator[routing]() -> void:
+get_operator:
+    // vouch_escrow.py:183
+    // return arc4.Address(self.operator)
+    intc_0 // 0
+    bytec_0 // "operator"
+    app_global_get_ex
+    assert // check self.operator exists
+    // vouch_escrow.py:181
+    // @arc4.abimethod(readonly=True)
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.get_asset_id[routing]() -> void:
+get_asset_id:
+    // vouch_escrow.py:187
+    // return self.asset_id
+    intc_0 // 0
+    bytec_1 // "asset_id"
+    app_global_get_ex
+    assert // check self.asset_id exists
+    // vouch_escrow.py:185
+    // @arc4.abimethod(readonly=True)
+    itob
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return
+
+
+// vouch_escrow.VouchEscrow.get_owner[routing]() -> void:
+get_owner:
+    // vouch_escrow.py:189
+    // @arc4.abimethod(readonly=True)
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // vouch_escrow.py:191
+    // owner, has_owner = self.owners.maybe(seller_id)
+    bytec 4 // 0x6f776e3a
+    swap
+    concat
+    box_get
+    // vouch_escrow.py:192
+    // assert has_owner, "unknown seller"
+    assert // unknown seller
+    // vouch_escrow.py:189
+    // @arc4.abimethod(readonly=True)
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_1 // 1
+    return

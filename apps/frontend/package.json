@@ -1,0 +1,48 @@
+{
+  "name": "@vouch/frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Vouch frontend — wallet UI for x402 referral cycles",
+  "scripts": {
+    "dev": "vite",
+    "start": "vite",
+    "build": "tsc -b && vite build",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@blockshake/defly-connect": "^1.2.1",
+    "@fontsource-variable/schibsted-grotesk": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@noble/ed25519": "^3.1.0",
+    "@perawallet/connect": "^1.6.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@txnlab/use-wallet-react": "^4.6.0",
+    "@txnlab/use-wallet-ui-react": "^1.2.1",
+    "@x402-avm/avm": "^2.6.1",
+    "@x402-avm/core": "^2.6.1",
+    "@x402-avm/fetch": "^2.6.1",
+    "algosdk": "^3.6.0",
+    "buffer": "^6.0.3",
+    "canonify": "^2.1.1",
+    "geist": "^1.7.2",
+    "lute-connect": "^1.7.0",
+    "motion": "^13.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "oxlint": "^1.75.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.0"
+  }
+}

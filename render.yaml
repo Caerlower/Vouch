@@ -1,0 +1,97 @@
+# Vouch on Render — Blueprint
+# https://dashboard.render.com/blueprints
+#
+# Creates:
+#   vouch-seller  — mock seller API (plain + native x402)
+#   vouch-api     — referral / escrow middleware
+#   vouch-web     — Vite SPA (static)
+#
+# After first deploy: set secret env vars in the Dashboard (sync: false below).
+# Free web services sleep + wipe in-memory state; use Starter for a live demo.
+
+services:
+  - type: web
+    name: vouch-seller
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm run start -w @vouch/seller-demo
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NATIVE_PAY_TO
+        sync: false
+      - key: VOUCH_FULFILL_SECRET
+        sync: false
+      - key: BASE_PRICE_USDC
+        value: "0.05"
+
+  - type: web
+    name: vouch-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm run start -w @vouch/backend
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: SELLER_SERVICE_URL
+        fromService:
+          name: vouch-seller
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+      # Set after first deploy to the vouch-web URL (avoids blueprint cycles).
+      - key: PUBLIC_SITE_URL
+        sync: false
+      - key: FACILITATOR_URL
+        value: https://facilitator.goplausible.xyz
+      - key: NETWORK
+        value: algorand-testnet
+      - key: BASE_PRICE_USDC
+        value: "0.05"
+      - key: REFERRAL_DISCOUNT_PERCENT
+        value: "20"
+      - key: REFERRAL_COMMISSION_PERCENT
+        value: "8"
+      - key: USDC_ASA_ID
+        value: "10458941"
+      - key: ALGOD_URL
+        value: https://testnet-api.algonode.cloud
+      - key: DEMO_MODE
+        value: "false"
+      - key: SKIP_FACILITATOR_SYNC
+        value: "false"
+      - key: VOUCH_PAY_TO
+        sync: false
+      - key: ESCROW_APP_ID
+        sync: false
+      - key: VOUCH_OPERATOR_MNEMONIC
+        sync: false
+      - key: VOUCH_OPERATOR_ADDRESS
+        sync: false
+      - key: VOUCH_OPERATOR_API_KEY
+        sync: false
+      - key: VOUCH_FULFILL_SECRET
+        sync: false
+
+  - type: web
+    name: vouch-web
+    runtime: static
+    buildCommand: npm install && npm run build -w @vouch/frontend
+    staticPublishPath: apps/frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: VITE_VOUCH_API
+        fromService:
+          name: vouch-api
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL

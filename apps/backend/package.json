@@ -1,0 +1,34 @@
+{
+  "name": "@vouch/backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Vouch backend — referral & pricing middleware for x402 on Algorand",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "deploy:escrow": "tsx --env-file=.env scripts/deploy-escrow.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@algorandfoundation/algokit-utils": "^10.0.0-alpha.39",
+    "@noble/ed25519": "^3.1.0",
+    "@x402-avm/avm": "^2.6.1",
+    "@x402-avm/core": "^2.6.1",
+    "@x402-avm/express": "^2.6.1",
+    "algosdk": "^3.6.0",
+    "canonify": "^2.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.2.0",
+    "tsx": "^4.23.11",
+    "typescript": "^7.0.2"
+  }
+}

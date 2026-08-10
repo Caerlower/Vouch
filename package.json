@@ -1,0 +1,24 @@
+{
+  "name": "vouch",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vouch — referral middleware for native x402 on Algorand",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev -w @vouch/backend",
+    "dev:frontend": "npm run dev -w @vouch/frontend",
+    "dev:seller": "npm run dev -w @vouch/seller-demo",
+    "start:backend": "npm run start -w @vouch/backend",
+    "start:frontend": "npm run start -w @vouch/frontend",
+    "start:seller": "npm run start -w @vouch/seller-demo",
+    "deploy:escrow": "npm run deploy:escrow -w @vouch/backend",
+    "typecheck": "npm run typecheck -w @vouch/backend && npm run typecheck -w @vouch/frontend && npm run typecheck -w @vouch/seller-demo",
+    "demo": "bash scripts/demo-flow.sh"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
