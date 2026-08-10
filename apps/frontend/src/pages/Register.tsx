@@ -15,13 +15,21 @@ import { Bezel, Btn, Page, SideInk, SideSteps } from "../components/ui";
 
 const ADDR_RE = /^[A-Z2-7]{58}$/;
 
+/** Demo seller base — local in dev, hosted seller in production builds. */
+const SELLER_DEMO_BASE = (
+  (import.meta.env.VITE_SELLER_DEMO_URL as string | undefined)?.trim() ||
+  (import.meta.env.DEV
+    ? "http://localhost:4001"
+    : "https://vouch-1-wwxe.onrender.com")
+).replace(/\/$/, "");
+
 export default function Register() {
   const { activeAddress, activeWallet, signTransactions } = useWallet();
   const [mode, setMode] = useState<"plain" | "native">("native");
   const [form, setForm] = useState({
     name: "",
-    endpointUrl: "http://localhost:4001",
-    resourceUrl: "http://localhost:4001/x402/data",
+    endpointUrl: SELLER_DEMO_BASE,
+    resourceUrl: `${SELLER_DEMO_BASE}/x402/data`,
     payoutAddress: "",
     basePriceUsdc: "0.05",
     referralDiscountPercent: "20",
@@ -283,7 +291,7 @@ export default function Register() {
                         className={field}
                         value={form.endpointUrl}
                         onChange={(e) => set("endpointUrl", e.target.value)}
-                        placeholder="http://localhost:4001"
+                        placeholder={SELLER_DEMO_BASE}
                       />
                     </label>
                     <label className="block text-[13px] font-medium text-muted">
@@ -333,7 +341,7 @@ export default function Register() {
                         className={field}
                         value={form.resourceUrl}
                         onChange={(e) => set("resourceUrl", e.target.value)}
-                        placeholder="http://localhost:4001/x402/data"
+                        placeholder={`${SELLER_DEMO_BASE}/x402/data`}
                       />
                     </label>
                     <Btn

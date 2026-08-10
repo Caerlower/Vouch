@@ -83,7 +83,31 @@ if (!vouchPayTo || vouchPayTo.length !== 58) {
 }
 
 const app = express();
-app.use(cors());
+// Render / reverse proxies terminate TLS — needed for correct https resource URLs in 402s.
+app.set("trust proxy", 1);
+app.use(
+  cors({
+    origin: true,
+    credentials: false,
+    // Browser clients on another origin (Vercel) must read these x402 headers.
+    exposedHeaders: [
+      "PAYMENT-REQUIRED",
+      "PAYMENT-RESPONSE",
+      "Payment-Required",
+      "Payment-Response",
+      "X-PAYMENT-RESPONSE",
+    ],
+    allowedHeaders: [
+      "Content-Type",
+      "PAYMENT-SIGNATURE",
+      "Payment-Signature",
+      "PAYMENT-REQUIRED",
+      "Payment-Required",
+      "X-PAYMENT",
+      "X-PAYMENT-RESPONSE",
+    ],
+  }),
+);
 app.use(express.json({ limit: "1mb" }));
 
 // ---------------------------------------------------------------------------
