@@ -4,5 +4,14 @@
   "installCommand": "npm install",
   "buildCommand": "npm run build -w @vouch/frontend",
   "outputDirectory": "apps/frontend/dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "https://vouch-obr5.onrender.com/:match*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

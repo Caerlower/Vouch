@@ -62,8 +62,9 @@ const DEMO_MODE =
 const SKIP_FACILITATOR_SYNC =
   String(process.env.SKIP_FACILITATOR_SYNC || "false").toLowerCase() ===
   "true";
-const PUBLIC_SITE_URL =
-  process.env.PUBLIC_SITE_URL || "http://localhost:5173";
+const PUBLIC_SITE_URL = (
+  process.env.PUBLIC_SITE_URL || "http://localhost:5173"
+).replace(/\/+$/, "");
 
 const {
   vouchPayTo,
